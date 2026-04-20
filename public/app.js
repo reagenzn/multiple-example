@@ -1,11 +1,18 @@
 const list = document.getElementById('list');
 const form = document.getElementById('form');
 const titleInput = document.getElementById('title');
+const dueAtInput = document.getElementById('dueAt');
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
+}
+
+function formatDue(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString();
 }
 
 async function loadTodos() {
@@ -15,11 +22,15 @@ async function loadTodos() {
   for (const todo of todos) {
     const li = document.createElement('li');
     li.className = todo.done ? 'done' : '';
+    const dueHtml = todo.dueAt
+      ? `<span class="due${todo.overdue ? ' overdue' : ''}">${escapeHtml(formatDue(todo.dueAt))}${todo.overdue ? ' <span class="badge">overdue</span>' : ''}</span>`
+      : '';
     li.innerHTML = `
       <label>
         <input type="checkbox" ${todo.done ? 'checked' : ''} data-id="${todo.id}">
-        <span>${escapeHtml(todo.title)}</span>
+        <span class="title">${escapeHtml(todo.title)}</span>
       </label>
+      ${dueHtml}
       <button type="button" data-delete="${todo.id}" aria-label="delete">×</button>
     `;
     list.appendChild(li);
@@ -30,12 +41,15 @@ form.addEventListener('submit', async e => {
   e.preventDefault();
   const title = titleInput.value.trim();
   if (!title) return;
+  const body = { title };
+  if (dueAtInput.value) body.dueAt = dueAtInput.value;
   await fetch('/api/todos', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title })
+    body: JSON.stringify(body)
   });
   titleInput.value = '';
+  dueAtInput.value = '';
   loadTodos();
 });
 
