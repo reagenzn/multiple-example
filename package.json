@@ -1,0 +1,13 @@
+{
+  "name": "multiple-example",
+  "version": "0.1.0",
+  "description": "Public companion demo for the Claude parallel-development slide deck",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
