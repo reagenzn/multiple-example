@@ -37,12 +37,93 @@ rather than sharing `node_modules` with wt0.
 
 - Base branch: **`main`**
 - Branch names: `feat/#<issue>-<slug>`, `fix/#<issue>-<slug>`, `chore/<slug>`
-- Commit style: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:` …)
-- PR body includes `Closes #<issue>` when resolving an issue
 - **Never `rebase`**. Integrate `main` with `git merge origin/main`.
   Rebase rewrites commit hashes and causes repeated conflicts with
   sibling PRs that share parent commits.
 - Always branch from the latest `origin/main`, not a stale local `main`.
+
+### Commit messages — Conventional Commits
+
+All commits **must** follow [Conventional Commits](https://www.conventionalcommits.org/).
+
+```
+<type>(<scope>): <short summary>
+
+<optional body — explain the *why*, wrap at ~72 chars>
+
+<optional footer — e.g., Closes #<issue>, BREAKING CHANGE: ...>
+```
+
+Allowed `type`s in this repo:
+
+| type       | use for                                                |
+| ---------- | ------------------------------------------------------ |
+| `feat`     | user-visible new feature                               |
+| `fix`      | bug fix                                                |
+| `chore`    | tooling, config, scaffolding, non-user-visible         |
+| `docs`     | README / CLAUDE.md / other documentation only          |
+| `refactor` | internal restructuring without behavior change         |
+| `style`    | formatting / whitespace only (no logic)                |
+| `test`     | add or update tests (future-proof; no tests yet)       |
+
+Rules:
+
+- Summary is imperative and lowercase (`add`, not `Added`/`Adds`).
+- No trailing period.
+- Squash unrelated changes into separate commits.
+- When resolving an issue, add `Closes #<issue>` in the footer (not the
+  subject).
+- Breaking changes: add `!` after the type (`feat!: ...`) and a
+  `BREAKING CHANGE:` footer.
+
+### Pull request format
+
+**Title** — same Conventional Commits shape as the squash target commit,
+with the issue number in parentheses when applicable:
+
+```
+<type>(<scope>)?: <short summary> (#<issue>)
+```
+
+Examples:
+
+- `feat: add optional due date and overdue flag (#1)`
+- `fix: /api/todos PUT drops dueAt when other fields are patched (#4)`
+- `chore: add CLAUDE.md and issue-implement skill`
+
+**Body** — use this template via `gh pr create --body`:
+
+```markdown
+## Summary
+- <2–4 bullets: what changed and why>
+
+## Acceptance criteria
+<!-- copy the checklist from the Issue, tick items that are met -->
+- [x] ...
+- [ ] ...
+
+## Test plan
+- [x] `curl` exercised the API contract (golden path + validation 400s)
+- [x] Static assets (`/`, `/app.js`, `/style.css`) return 200
+- [ ] Manual browser check of the golden path
+
+## Known follow-ups
+<!-- optional; list any code-review findings deferred to follow-up commits on this PR -->
+- …
+
+Closes #<issue>
+```
+
+Rules:
+
+- `Closes #<issue>` appears in the body when the PR resolves an issue
+  (GitHub auto-closes on merge). For PRs that only partially address an
+  issue, use `Refs #<issue>`.
+- Omit sections that don't apply (`Acceptance criteria` for pure chore
+  PRs, `Known follow-ups` when empty).
+- Keep the body scannable — bullets, no walls of prose.
+- Don't paste full diffs; link to specific lines with
+  `owner/repo#<PR>#discussion_rN` if needed.
 
 ## Ports when running in parallel
 
