@@ -9,9 +9,28 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+function normalizeTags(input) {
+  if (!Array.isArray(input)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const raw of input) {
+    if (typeof raw !== 'string') continue;
+    const t = raw.trim().replace(/^#+/, '');
+    if (!t || seen.has(t)) continue;
+    seen.add(t);
+    result.push(t);
+  }
+  return result;
+}
+
+function withTags(todo) {
+  return { ...todo, tags: Array.isArray(todo.tags) ? todo.tags : [] };
+}
+
 function loadTodos() {
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const raw = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    return Array.isArray(raw) ? raw.map(withTags) : [];
   } catch {
     return [];
   }
@@ -33,6 +52,7 @@ app.post('/api/todos', (req, res) => {
     id: Date.now().toString(),
     title,
     done: false,
+    tags: normalizeTags(req.body.tags),
     createdAt: new Date().toISOString()
   };
   todos.push(todo);
@@ -44,7 +64,9 @@ app.put('/api/todos/:id', (req, res) => {
   const todos = loadTodos();
   const idx = todos.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'not found' });
-  todos[idx] = { ...todos[idx], ...req.body, id: todos[idx].id };
+  const patch = { ...req.body };
+  if ('tags' in patch) patch.tags = normalizeTags(patch.tags);
+  todos[idx] = { ...todos[idx], ...patch, id: todos[idx].id };
   saveTodos(todos);
   res.json(todos[idx]);
 });
