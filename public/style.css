@@ -32,6 +32,40 @@ form button {
   cursor: pointer;
 }
 
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: #f4f6f4;
+  border-radius: 4px;
+}
+
+.filter-bar[hidden],
+.clear-filter[hidden] {
+  display: none;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  color: #555;
+  margin-right: 0.25rem;
+}
+
+.clear-filter {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  background: none;
+  color: #2c5f2d;
+  border: 1px solid #2c5f2d;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 ul {
   list-style: none;
   padding: 0;
@@ -39,10 +73,12 @@ ul {
 
 li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
   border-bottom: 1px solid #eee;
+  gap: 0.25rem;
 }
 
 li label {
@@ -51,6 +87,7 @@ li label {
   align-items: center;
   flex: 1;
   cursor: pointer;
+  min-width: 0;
 }
 
 li.done span {
@@ -58,7 +95,34 @@ li.done span {
   color: #888;
 }
 
-li button {
+li .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tag-chip {
+  background: #e7efe7;
+  color: #2c5f2d;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.tag-chip:hover {
+  background: #d4e4d4;
+}
+
+.tag-chip.selected {
+  background: #2c5f2d;
+  color: white;
+  border-color: #2c5f2d;
+}
+
+.delete-btn {
   background: none;
   border: none;
   color: #999;

@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { sanitizeTags } = require('./lib/tags');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,7 +12,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 function loadTodos() {
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const raw = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    return raw.map(t => ({ ...t, tags: sanitizeTags(t.tags) }));
   } catch {
     return [];
   }
@@ -32,6 +34,7 @@ app.post('/api/todos', (req, res) => {
   const todo = {
     id: Date.now().toString(),
     title,
+    tags: sanitizeTags(req.body.tags),
     done: false,
     createdAt: new Date().toISOString()
   };
@@ -44,7 +47,9 @@ app.put('/api/todos/:id', (req, res) => {
   const todos = loadTodos();
   const idx = todos.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'not found' });
-  todos[idx] = { ...todos[idx], ...req.body, id: todos[idx].id };
+  const patch = { ...req.body };
+  if ('tags' in patch) patch.tags = sanitizeTags(patch.tags);
+  todos[idx] = { ...todos[idx], ...patch, id: todos[idx].id };
   saveTodos(todos);
   res.json(todos[idx]);
 });
