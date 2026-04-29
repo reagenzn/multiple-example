@@ -66,3 +66,30 @@ li button {
   padding: 0 0.5rem;
   cursor: pointer;
 }
+
+.due {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0 0.5rem;
+}
+
+.due.overdue {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.badge {
+  background: #c0392b;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.25rem;
+}
+
+input[type="date"] {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
